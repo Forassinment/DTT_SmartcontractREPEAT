@@ -42,7 +42,8 @@ contract HealthcareDataManagement is AccessControl, Ownable {
     constructor(address admin) Ownable(admin) {
         _setupDefaultRoles(admin); // Initialize roles with the provided admin address
     }
- // Internal function to set up default roles
+
+    // Internal function to set up default roles
     function _setupDefaultRoles(address admin) internal {
         _setupRole(DEFAULT_ADMIN_ROLE, admin); // Grant admin role
         _setupRole(HEALTHCARE_PROVIDER_ROLE, admin); // Grant healthcare provider role
@@ -97,3 +98,27 @@ contract HealthcareDataManagement is AccessControl, Ownable {
         // Log the access
         accessLogs.push(AccessLog(recordId, msg.sender, block.timestamp)); // Record the access event
         emit RecordAccessed(recordId, msg.sender); // Emit event for record access
+
+        return records[recordId].dataHash; // Return the data hash of the record
+    }
+
+    // Function to add a new healthcare provider
+    function addHealthcareProvider(address provider) public onlyOwner {
+        grantRole(HEALTHCARE_PROVIDER_ROLE, provider); // Grant healthcare provider role
+    }
+
+    // Function to remove a healthcare provider
+    function removeHealthcareProvider(address provider) public onlyOwner {
+        revokeRole(HEALTHCARE_PROVIDER_ROLE, provider); // Revoke healthcare provider role
+    }
+
+    // Function to get the access logs
+    function getAccessLogs() public view returns (AccessLog[] memory) {
+        return accessLogs; // Return the array of access logs
+    }
+
+    // Function to get all records owned by a specific address
+    function getRecordsByOwner(address owner) public view returns (uint256[] memory) {
+        return ownerRecords[owner]; // Return the array of record IDs owned by the address
+    }
+}
